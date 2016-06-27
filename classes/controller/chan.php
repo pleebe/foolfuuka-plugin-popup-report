@@ -105,12 +105,16 @@ class PopupReport extends \Foolz\FoolFuuka\Controller\Chan
             if($is_api&&$this->getPost('access_key')!==$this->preferences->get('foolfuuka.plugins.offsitereports.accesskey')) {
                 return $this->response->setData(['error' => _i('Invalid access key.')])->setStatusCode(500);
             }
+            if($is_api)
+                $ip = Inet::ptod($this->getPost('ip'));
+            else
+                $ip = Inet::ptod($this->getRequest()->getClientIp());
             try {
                 $this->report_coll->add(
                     $this->radix,
                     $comment->comment->doc_id,
                     $this->getPost('reason'),
-                    Inet::ptod($this->getRequest()->getClientIp())
+                    $ip
                 );
             } catch (\Foolz\FoolFuuka\Model\ReportException $e) {
                 if($is_api)
