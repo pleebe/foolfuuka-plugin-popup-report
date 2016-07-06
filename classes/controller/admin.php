@@ -20,6 +20,26 @@ class ReportsAdmin extends \Foolz\FoolFrame\Controller\Admin
         return $this->getAuth()->hasAccess('maccess.admin');
     }
 
+    protected function generate_key()
+    {
+        $bytes = openssl_random_pseudo_bytes(16, $cstrong);
+        if ($cstrong !== false) {
+            // should be random enough
+            return bin2hex($bytes);
+        } else {
+            // not so random fallback
+            mt_srand();
+            $dec = dechex(mt_rand(0, mt_getrandmax()));
+            mt_srand();
+            $dec .= dechex(mt_rand(0, mt_getrandmax()));
+            mt_srand();
+            $dec .= dechex(mt_rand(0, mt_getrandmax()));
+            mt_srand();
+            $dec .= dechex(mt_rand(0, mt_getrandmax()));
+            return $dec;
+        }
+    }
+
     protected function structure()
     {
         $arr = [
@@ -29,9 +49,14 @@ class ReportsAdmin extends \Foolz\FoolFrame\Controller\Admin
             'foolfuuka.plugins.offsitereports.accesskey' => [
                 'preferences' => true,
                 'type' => 'input',
-                'label' => _i('Offsite reports API access key.'),
-                'help' => _i(''),
+                'label' => _i('Insert offsite reports API access keys.'),
+                'help' => _i('Example <pre>key1,key2,key3</pre>'),
                 'class' => 'span8',
+            ],
+            'foolfuuka.plugins.offsitereports.accesskey.generate' => [
+                'type' => 'checkbox',
+                'label' => _i(''),
+                'help' => _i('Generate new key automatically.')
             ],
             'separator1' => [
                 'type' => 'separator-short',
@@ -51,11 +76,17 @@ class ReportsAdmin extends \Foolz\FoolFrame\Controller\Admin
 
     public function action_manage()
     {
-        $this->param_manager->setParam('method_title', [_i('FoolFuuka'), _i("Offsite Reports"),_i('Manage')]);
+        $this->param_manager->setParam('method_title', [_i('FoolFuuka'), _i("Offsite Reports"), _i('Manage')]);
 
         $data['form'] = $this->structure();
 
-        $this->preferences->submit_auto($this->getRequest(), $data['form'], $this->getPost());
+        if ($this->getPost() && $this->getPost('foolfuuka,plugins,offsitereports,accesskey,generate')) {
+            $orig = $this->preferences->get('foolfuuka.plugins.offsitereports.accesskey');
+            $post['foolfuuka.plugins.offsitereports.accesskey'] = ($orig ? $orig . ',' : '') . $this->generate_key();
+            $this->preferences->submit_auto($this->getRequest(), $data['form'], $post);
+        } else {
+            $this->preferences->submit_auto($this->getRequest(), $data['form'], $this->getPost());
+        }
 
         // create a form
         $this->builder->createPartial('body', 'form_creator')

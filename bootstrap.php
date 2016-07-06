@@ -18,7 +18,8 @@ class HHVM_Popup
                 /** @var Autoloader $autoloader */
                 $autoloader = $context->getService('autoloader');
                 $autoloader->addClassMap([
-                    'Foolz\FoolFuuka\Controller\Chan\PopupReport' => __DIR__.'/classes/controller/chan.php',
+                    'Foolz\FoolFuuka\Controller\Chan\PopupReport' => __DIR__ . '/classes/controller/chan.php',
+                    'Foolz\FoolFuuka\Controller\Api\PopupReport' => __DIR__ . '/classes/controller/api/chan.php',
                     'Foolz\FoolFrame\Controller\Admin\Plugins\ReportsAdmin' => __DIR__ . '/classes/controller/admin.php',
                 ]);
 
@@ -53,20 +54,26 @@ class HHVM_Popup
 
                         foreach ($radices as $radix) {
                             $routes->getRouteCollection()->add(
-                                'foolfuuka.plugin.popup-report.chan.radix.'.$radix->shortname, new Route(
-                                    '/'.$radix->shortname.'/report/{_suffix}',
-                                    [
-                                        '_controller' => '\Foolz\FoolFuuka\Controller\Chan\PopupReport::report',
-                                        '_default_suffix' => '',
-                                        '_suffix' => '',
-                                        'radix_shortname' => $radix->shortname
-                                    ],
-                                    [
-                                        '_suffix' => '.*'
-                                    ]
-                                )
-                            );
+                                'foolfuuka.plugin.popup-report.chan.radix.' . $radix->shortname, new Route(
+                                '/' . $radix->shortname . '/report/{_suffix}',
+                                [
+                                    '_controller' => '\Foolz\FoolFuuka\Controller\Chan\PopupReport::report',
+                                    '_default_suffix' => '',
+                                    '_suffix' => '',
+                                    'radix_shortname' => $radix->shortname
+                                ],
+                                [
+                                    '_suffix' => '.*'
+                                ]
+                            ));
                         }
+                        $routes->getRouteCollection()->add(
+                            'foolfuuka.plugin.popup-report.api.chan.', new Route(
+                            '/_/api/chan/offsite_report/',
+                            [
+                                '_controller' => '\Foolz\FoolFuuka\Controller\Api\PopupReport::offsite_report',
+                            ]
+                        ));
                     });
             });
     }

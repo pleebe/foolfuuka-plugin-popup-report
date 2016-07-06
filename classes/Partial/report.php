@@ -1,3 +1,4 @@
+<?php use Foolz\FoolFrame\Model\Form; $form = New Form($this->getRequest()); ?>
 <div class="alert alert-danger" style="margin:5% 10%;">
     <h4 class="alert-heading">Report » Post No.<?= $num ?></h4>
     <br>
