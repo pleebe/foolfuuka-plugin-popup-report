@@ -67,13 +67,15 @@ class HHVM_Popup
                                 ]
                             ));
                         }
-                        $routes->getRouteCollection()->add(
-                            'foolfuuka.plugin.popup-report.api.chan.', new Route(
-                            '/_/api/chan/offsite_report/',
-                            [
-                                '_controller' => '\Foolz\FoolFuuka\Controller\Api\PopupReport::offsite_report',
-                            ]
-                        ));
+                        if ($context->getService('preferences')->get('foolfuuka.plugins.offsitereports.accesskey', '') != '') {
+                            $routes->getRouteCollection()->add(
+                                'foolfuuka.plugin.popup-report.api.chan.', new Route(
+                                '/_/api/chan/offsite_report/',
+                                [
+                                    '_controller' => '\Foolz\FoolFuuka\Controller\Api\PopupReport::offsite_report',
+                                ]
+                            ));
+                        }
                     });
             });
     }
