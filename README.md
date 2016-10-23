@@ -8,3 +8,5 @@ Adds new report form under
 ```
 
 Can also be used for receiving reports from compatible sender. Configure the access key for that in 'Offsite Reports' admin page under 'Plugins'.
+
+Offsite reports API documentation: [https://4plebs.tech/foolfuuka/#4plebs-specific-offsite-report](https://4plebs.tech/foolfuuka/#4plebs-specific-offsite-report)
