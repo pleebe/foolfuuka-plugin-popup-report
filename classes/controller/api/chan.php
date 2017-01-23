@@ -46,7 +46,11 @@ class PopupReport extends \Foolz\FoolFuuka\Controller\Api\Chan
     {
         $this->response = new JsonResponse();
 
-        $this->response->headers->set('Access-Control-Allow-Origin', 'sys.4chan.org');
+        $origin = $this->getRequest()->headers->get('Origin');
+        $allowed_origins = ['http://sys.4chan.org', 'https://sys.4chan.org', 'http://boards.4chan.org', 'https://boards.4chan.org'];
+        if (in_array($origin, $allowed_origins)) {
+            $this->response->headers->set('Access-Control-Allow-Origin', $origin);
+        }
         $this->response->headers->set('Access-Control-Allow-Methods', 'POST');
 
         if (!$this->check_board()) {
@@ -77,7 +81,7 @@ class PopupReport extends \Foolz\FoolFuuka\Controller\Api\Chan
             if (!$this->access_key_is_ok()) {
                 return $this->response->setData(['error' => _i('Invalid access key.')])->setStatusCode(403);
             } else if (!filter_var($this->getPost('ip'), FILTER_VALIDATE_IP)) {
-                return $this->response->setData(['error' => _i('Invalid IP-address specified.')])->setStatusCode(403);
+                return $this->response->setData(['error' => _i('Invalid IP-address specified.')])->setStatusCode(422);
             } else {
                 $ip = Inet::ptod($this->getPost('ip'));
             }
