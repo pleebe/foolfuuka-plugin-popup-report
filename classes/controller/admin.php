@@ -49,7 +49,7 @@ class ReportsAdmin extends \Foolz\FoolFrame\Controller\Admin
             'foolfuuka.plugins.offsitereports.accesskey' => [
                 'preferences' => true,
                 'type' => 'input',
-                'label' => _i('Insert offsite reports API access keys. Leave blank to disable this feature.'),
+                'label' => _i('Insert offsite reports API access keys. This is used for specifying report source IP-address manually. This can be blank.'),
                 'help' => _i('Example <pre>key1,key2,key3</pre>'),
                 'class' => 'span8',
             ],

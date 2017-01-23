@@ -30,6 +30,9 @@ class PopupReport extends \Foolz\FoolFuuka\Controller\Api\Chan
     protected function access_key_is_ok()
     {
         $check = $this->getPost('access_key');
+        if ($check === null) {
+            return false;
+        }
         $valid_keys = explode(',', $this->preferences->get('foolfuuka.plugins.offsitereports.accesskey'));
         foreach ($valid_keys as $key) {
             if ($check == $key) {
@@ -43,9 +46,9 @@ class PopupReport extends \Foolz\FoolFuuka\Controller\Api\Chan
     {
         $this->response = new JsonResponse();
 
-        if (!$this->access_key_is_ok()) {
-            return $this->response->setData(['error' => _i('Invalid access key.')])->setStatusCode(403);
-        }
+        $this->response->headers->set('Access-Control-Allow-Origin', 'sys.4chan.org');
+        $this->response->headers->set('Access-Control-Allow-Methods', 'POST');
+
         if (!$this->check_board()) {
             return $this->response->setData(['error' => _i('No board selected.')])->setStatusCode(422);
         }
@@ -68,10 +71,16 @@ class PopupReport extends \Foolz\FoolFuuka\Controller\Api\Chan
             return $this->response->setData(['error' => _i($e->getMessage())])->setStatusCode(500);
         }
 
-        if ($this->getPost('ip')) {
-            $ip = Inet::ptod($this->getPost('ip'));
-        } else {
-            $ip = Inet::ptod($this->getRequest()->getClientIp());
+        $ip = Inet::ptod($this->getRequest()->getClientIp());
+
+        if ($this->getPost('ip') && $this->getPost('access_key')) {
+            if (!$this->access_key_is_ok()) {
+                return $this->response->setData(['error' => _i('Invalid access key.')])->setStatusCode(403);
+            } else if (!filter_var($this->getPost('ip'), FILTER_VALIDATE_IP)) {
+                return $this->response->setData(['error' => _i('Invalid IP-address specified.')])->setStatusCode(403);
+            } else {
+                $ip = Inet::ptod($this->getPost('ip'));
+            }
         }
 
         try {
@@ -82,9 +91,8 @@ class PopupReport extends \Foolz\FoolFuuka\Controller\Api\Chan
                 $ip
             );
         } catch (\Foolz\FoolFuuka\Model\ReportException $e) {
-            return $this->response->setData(['error' => _i($e->getMessage())]);
+            return $this->response->setData(['error' => _i($e->getMessage())])->setStatusCode(500);
         }
-        $this->response->setData(['success' => _i('You have successfully submitted a report for this post.')]);
-        return $this->response;
+        return $this->response->setData(['success' => _i('You have successfully submitted a report for this post.')]);
     }
 }
