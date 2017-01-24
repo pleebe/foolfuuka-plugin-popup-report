@@ -24,6 +24,10 @@ class PopupReport extends \Foolz\FoolFuuka\Controller\Api\Chan
     {
         $this->report_coll = $this->getContext()->getService('foolfuuka.report_collection');
         $this->preferences = $this->getContext()->getService('preferences');
+        if ($this->request->headers->get('Content-Type') === 'application/json') {
+            $data = json_decode($this->request->getContent(), true);
+            $this->request->request->replace(is_array($data) ? $data : array());
+        }
         parent::before();
     }
 
