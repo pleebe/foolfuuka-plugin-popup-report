@@ -51,8 +51,8 @@ class PopupReport extends \Foolz\FoolFuuka\Controller\Api\Chan
         $this->response = new JsonResponse();
 
         $origin = $this->getRequest()->headers->get('Origin');
-        $allowed_origins = ['http://sys.4chan.org', 'https://sys.4chan.org', 'http://boards.4chan.org', 'https://boards.4chan.org'];
-        if (in_array($origin, $allowed_origins)) {
+        if (in_array($origin, ['http://sys.4chan.org', 'https://sys.4chan.org', 'http://boards.4chan.org', 'https://boards.4chan.org',
+            'http://sys.4channel.org', 'https://sys.4channel.org', 'http://boards.4channel.org', 'https://boards.4channel.org'])) {
             $this->response->headers->set('Access-Control-Allow-Origin', $origin);
         }
         $this->response->headers->set('Access-Control-Allow-Methods', 'POST');
